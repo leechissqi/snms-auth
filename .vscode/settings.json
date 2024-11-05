@@ -1,0 +1,16 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode", // Prettier를 모든 파일의 기본 포매터로 설정
+  "editor.formatOnSave": true, // 저장할 때 자동 포매팅
+  "prettier.configPath": "./prettier.config.js", // Prettier 설정 경로 명시
+  "prettier.requireConfig": true, // Prettier 설정 파일이 없으면 Prettier 사용 안함
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "always", // 모든 코드 린트 자동 수정
+    "source.organizeImports": "always" // 저장할 때 import 문 자동 정리
+  },
+  "files.insertFinalNewline": true, // 파일 끝에 개행 문자 자동 추가
+  "files.trimTrailingWhitespace": true, // 불필요한 공백 제거
+  "editor.detectIndentation": false, // 파일에 따라 탭 너비 자동 감지 비활성화
+  "editor.insertSpaces": true, // 탭 대신 스페이스 사용
+  "editor.tabSize": 2, // 탭 너비 설정
+  "cSpell.words": ["clsx", "heroicons", "signup", "snms", "tailwindcss"]
+}
