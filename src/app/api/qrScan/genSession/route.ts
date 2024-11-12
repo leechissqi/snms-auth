@@ -4,7 +4,7 @@ import { apiResponse, errorResponse } from '@/utils/responseUtils'
 import QRCode from 'qrcode'
 import { v4 as uuidv4 } from 'uuid'
 
-export async function GET() {
+export async function POST() {
   try {
     let sessionID
     let isUnique = false
@@ -34,13 +34,20 @@ export async function GET() {
     }
     if (sessionID) {
       // 세션 만료 시간 설정 (5분 후)
+      console.log('==================START====================')
       const expiredTime = new Date(Date.now() + 5 * 60 * 1000).toISOString()
-
       // sessionID와 만료 시간을 세션 테이블에 저장
-      await postgreSQL.query(
-        'INSERT INTO "COMDB".tbd_com_user_session (session_id, expires) VALUES ($1, $2)',
-        [sessionID, expiredTime]
-      )
+      try {
+        const aaa = await postgreSQL.query(
+          'INSERT INTO "COMDB".tbd_com_user_session (session_id, expires) VALUES ($1, $2)',
+          [sessionID, expiredTime]
+        )
+
+        console.log('insert 정보 : ', aaa.rowCount)
+      } catch (error) {
+        console.error('오류: ', error)
+      }
+      console.log('==================END====================')
 
       // sessionID로 QR 이미지 생성
       const qrCodeDataUrl = await QRCode.toDataURL(sessionID)
