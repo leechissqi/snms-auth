@@ -10,7 +10,7 @@ export async function GET() {
     let isUnique = false
 
     //만료된 sessionID 중 로그인(email정보 X)이 안된 정보 삭제
-    const nowDate = new Date(Date.now())
+    const nowDate = new Date(Date.now()).toISOString()
     await postgreSQL.query(
       'DELETE FROM "COMDB".tbd_com_user_session WHERE expires < $1 AND email is null',
       [nowDate]
@@ -34,7 +34,7 @@ export async function GET() {
     }
     if (sessionID) {
       // 세션 만료 시간 설정 (5분 후)
-      const expiredTime = new Date(Date.now() + 5 * 60 * 1000)
+      const expiredTime = new Date(Date.now() + 5 * 60 * 1000).toISOString()
 
       // sessionID와 만료 시간을 세션 테이블에 저장
       await postgreSQL.query(
