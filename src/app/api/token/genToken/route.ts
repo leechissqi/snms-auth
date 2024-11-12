@@ -18,6 +18,8 @@ export async function POST(req: NextRequest) {
     return errorResponse(400, { detailMessage: 'parameter is required.' })
   }
   const user = await getUser(body.email)
+  const sessionID = body.sessionID ?? ''
+
   if (!user) {
     return errorResponse(400, { detailMessage: 'not exist user.' })
   }
@@ -29,6 +31,13 @@ export async function POST(req: NextRequest) {
   // token 발행
   const accessToken = createToken(body.email)
   const refresh = refreshToken(body.email)
+  //sessionID 가 있는 경우 (QR스캔을 통한 2차인증)
+  if (sessionID.trim()) {
+    await postgreSQL.query(
+      'UPDATE "COMDB".tbd_com_user_session SET email = $1 where session_id = $2 ',
+      [body.email, sessionID]
+    )
+  }
   return apiResponse({ email: body.email, accessToken: accessToken, refreshToken: refresh })
 }
 
