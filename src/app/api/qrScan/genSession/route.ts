@@ -12,7 +12,7 @@ export async function POST() {
     //만료된 sessionID 중 로그인(email정보 X)이 안된 정보 삭제
     const nowDate = new Date(Date.now()).toISOString()
     await postgreSQL.query(
-      'DELETE FROM "COMDB".tbd_com_user_session WHERE expires < $1 AND email is null',
+      'DELETE FROM comdb.tbd_com_user_session WHERE expires < $1 AND email is null',
       [nowDate]
     )
 
@@ -23,7 +23,7 @@ export async function POST() {
 
       // sessionID가 이미 존재하는지 확인
       const result = await postgreSQL.query(
-        'SELECT COUNT(*) FROM "COMDB".tbd_com_user_session WHERE session_id = $1',
+        'SELECT COUNT(*) FROM comdb.tbd_com_user_session WHERE session_id = $1',
         [sessionID]
       )
 
@@ -34,21 +34,14 @@ export async function POST() {
     }
     if (sessionID) {
       // 세션 만료 시간 설정 (5분 후)
-      console.log('==================START====================')
       const expiredTime = new Date(Date.now() + 5 * 60 * 1000).toISOString()
+
       // sessionID와 만료 시간을 세션 테이블에 저장
-      try {
-        const aaa = await postgreSQL.query(
-          'INSERT INTO "COMDB".tbd_com_user_session (session_id, expires) VALUES ($1, $2)',
-          [sessionID, expiredTime]
-        )
 
-        console.log('insert 정보 : ', aaa.rowCount)
-      } catch (error) {
-        console.error('오류: ', error)
-      }
-      console.log('==================END====================')
-
+      await postgreSQL.query(
+        'INSERT INTO comdb.tbd_com_user_session (session_id, expires) VALUES ($1, $2)',
+        [sessionID, expiredTime]
+      )
       // sessionID로 QR 이미지 생성
       const qrCodeDataUrl = await QRCode.toDataURL(sessionID)
 
