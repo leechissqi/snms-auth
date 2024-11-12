@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   try {
     // 세션 ID 조회
     const result = await postgreSQL.query(
-      'SELECT session_id, expires FROM "COMDB".tbd_com_user_session WHERE session_id = $1',
+      'SELECT session_id, expires FROM comdb.tbd_com_user_session WHERE session_id = $1',
       [sessionID]
     )
 
