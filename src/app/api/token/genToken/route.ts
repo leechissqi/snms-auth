@@ -34,8 +34,8 @@ export async function POST(req: NextRequest) {
   //sessionID 가 있는 경우 (QR스캔을 통한 2차인증)
   if (sessionID.trim()) {
     await postgreSQL.query(
-      'UPDATE comdb.tbd_com_user_session SET email = $1 where session_id = $2 ',
-      [body.email, sessionID]
+      'UPDATE comdb.tbd_com_user_session SET email = $1, access_token = $2, refresh_token = $3 where session_id = $4 ',
+      [body.email, accessToken, refresh, sessionID]
     )
   }
   return apiResponse({ email: body.email, accessToken: accessToken, refreshToken: refresh })
