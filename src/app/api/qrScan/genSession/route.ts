@@ -43,7 +43,8 @@ export async function POST() {
         [sessionID, expiredTime]
       )
       // sessionID로 QR 이미지 생성
-      const qrCodeDataUrl = await QRCode.toDataURL(sessionID)
+      const qrCodeDataUrl = await QRCode.toDataURL('myapp://auth?sessionID=' + sessionID)
+      console.log('qrURL: ' + qrCodeDataUrl)
 
       // 성공적으로 생성된 QR 코드 반환
       return apiResponse({ sessionID: sessionID, qrCode: qrCodeDataUrl })
