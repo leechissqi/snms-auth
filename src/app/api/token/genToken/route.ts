@@ -13,19 +13,28 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const body = await req.json()
+  const sessionID = body.sessionID ?? ''
+
   //vlidation 체크
-  if (emptyValidation(body.email) || emptyValidation(body.userPwd)) {
+  if (
+    emptyValidation(body.email) ||
+    (emptyValidation(sessionID.trim()) && emptyValidation(body.userPwd))
+  ) {
+    console.log('----------------------------------------------------')
     return errorResponse(400, { detailMessage: 'parameter is required.' })
   }
   const user = await getUser(body.email)
-  const sessionID = body.sessionID ?? ''
 
   if (!user) {
     return errorResponse(400, { detailMessage: 'not exist user.' })
   }
-  const matchPwd = await bcrypt.compare(body.userPwd, user.password)
-  if (!matchPwd) {
-    return errorResponse(500, { detailMessage: 'not exist user.' })
+
+  //sessionID가 있는 경우는 로그인 이후 QR 로그인 시도하는 경우(패스워드 체크안함.)
+  if (!sessionID.trim()) {
+    const matchPwd = await bcrypt.compare(body.userPwd, user.password)
+    if (!matchPwd) {
+      return errorResponse(500, { detailMessage: 'not exist user.' })
+    }
   }
 
   // token 발행

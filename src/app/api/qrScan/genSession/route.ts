@@ -10,7 +10,8 @@ export async function POST() {
     let isUnique = false
 
     //만료된 sessionID 중 로그인(email정보 X)이 안된 정보 삭제
-    const nowDate = new Date(Date.now()).toISOString()
+    const nowDate = new Date(Date.now()).toISOString() //서버용
+    //const nowDate = new Date(Date.now()) //local용
     await postgreSQL.query(
       'DELETE FROM comdb.tbd_com_user_session WHERE expires < $1 AND email is null',
       [nowDate]
@@ -34,7 +35,8 @@ export async function POST() {
     }
     if (sessionID) {
       // 세션 만료 시간 설정 (5분 후)
-      const expiredTime = new Date(Date.now() + 5 * 60 * 1000).toISOString()
+      const expiredTime = new Date(Date.now() + 5 * 60 * 1000).toISOString() //서버용
+      //const expiredTime = new Date(Date.now() + 5 * 60 * 1000) //로컬용
 
       // sessionID와 만료 시간을 세션 테이블에 저장
 
