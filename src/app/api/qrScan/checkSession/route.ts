@@ -33,7 +33,6 @@ export async function POST(req: NextRequest) {
     }
 
     // 유효한 세션일 경우
-    console.log('=============' + sessionID)
     return apiResponse({ sessionID: session, useableSession: true })
   } catch (error) {
     console.error('Error checking session:', error)
