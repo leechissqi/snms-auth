@@ -29,25 +29,40 @@ export async function POST(req: NextRequest) {
     return errorResponse(400, { detailMessage: 'not exist user.' })
   }
 
-  //sessionID가 있는 경우는 로그인 이후 QR 로그인 시도하는 경우(패스워드 체크안함.)
-  if (!sessionID.trim()) {
-    const matchPwd = await bcrypt.compare(body.userPwd, user.password)
-    if (!matchPwd) {
-      return errorResponse(500, { detailMessage: 'not exist user.' })
+  //QR로그인인 경우는 skip, 일반/지문 로그인 경우에는 패스워드 체크
+  if (
+    (sessionID && !emptyValidation(sessionID.trim())) ||
+    (body.userPwd && !emptyValidation(body.userPwd))
+  ) {
+    // sessionID가 존재하고, 유효한 값이거나,
+    // sessionID가 없고, userPwd가 존재할 경우에만 처리
+    if (body.userPwd) {
+      // 비밀번호 체크
+      const matchPwd = await bcrypt.compare(body.userPwd, user.password)
+      if (!matchPwd) {
+        return errorResponse(500, { detailMessage: 'not exist user.' })
+      }
     }
+    // sessionID 관련 처리 추가 가능
   }
 
   // token 발행
   const accessToken = createToken(body.email)
   const refresh = refreshToken(body.email)
-  //sessionID 가 있는 경우 (QR스캔을 통한 2차인증)
+  //sessionID 가 있는 경우 session 테이블 데이터 저장
   if (sessionID.trim()) {
     await postgreSQL.query(
       'UPDATE comdb.tbd_com_user_session SET email = $1, access_token = $2, refresh_token = $3 where session_id = $4 ',
       [body.email, accessToken, refresh, sessionID]
     )
   }
-  return apiResponse({ email: body.email, accessToken: accessToken, refreshToken: refresh })
+  return apiResponse({
+    email: body.email,
+    user: user,
+    accessToken: accessToken,
+    refreshToken: refresh,
+  })
+  //
 }
 
 async function getUser(email: string): Promise<User | undefined> {
