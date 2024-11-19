@@ -35,8 +35,8 @@ export async function POST() {
     }
     if (sessionID) {
       // 세션 만료 시간 설정 (5분 후)
-      const expiredTime = new Date(Date.now() + 5 * 60 * 1000).toISOString() //서버용
-      //const expiredTime = new Date(Date.now() + 5 * 60 * 1000) //로컬용
+      const expiredTime = new Date(Date.now() + 30 * 60 * 1000).toISOString() //서버용
+      //const expiredTime = new Date(Date.now() + 30 * 60 * 1000) //로컬용
 
       // sessionID와 만료 시간을 세션 테이블에 저장
 
