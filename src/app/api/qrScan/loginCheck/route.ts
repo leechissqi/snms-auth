@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
   try {
     // 세션 ID 조회
     const result = await postgreSQL.query(
-      'SELECT session_id, email, expires, access_token, refresh_token FROM comdb.tbd_com_user_session WHERE session_id = $1',
+      'SELECT session_id, email, expires, access_token, refresh_token FROM comdb.tbd_com_user_session WHERE session_id = $1 and email is not null ',
       [sessionID]
     )
 
