@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
   //sessionID 가 있는 경우 session 테이블 데이터 저장
   if (sessionID.trim()) {
     await postgreSQL.query(
-      'UPDATE comdb.tbd_com_user_session SET email = $1, access_token = $2, refresh_token = $3 where session_id = $4 ',
+      'UPDATE comdb.tbd_com_user_session SET login_id = $1, access_token = $2, refresh_token = $3 where session_id = $4 ',
       [body.email, accessToken, refresh, sessionID]
     )
   }
@@ -67,7 +67,18 @@ export async function POST(req: NextRequest) {
 
 async function getUser(email: string): Promise<User | undefined> {
   try {
-    const user = await postgreSQL.query<User>('SELECT * FROM users WHERE email=$1', [email])
+    const user = await postgreSQL.query<User>(
+      `SELECT
+        user_id as id
+        , user_name as name
+        , login_id as email
+        , user_pwd as password
+        , auth_key
+        , pfx_user_code
+      FROM comdb.tbd_com_user_session
+      WHERE login_id=$1`,
+      [email]
+    )
     return user.rows[0]
   } catch (error) {
     console.error('Failed to fetch user:', error)

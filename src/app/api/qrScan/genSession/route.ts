@@ -13,7 +13,7 @@ export async function POST() {
     const nowDate = new Date(Date.now()).toISOString() //서버용
     //const nowDate = new Date(Date.now()) //local용
     await postgreSQL.query(
-      'DELETE FROM comdb.tbd_com_user_session WHERE expires < $1 AND email is null',
+      'DELETE FROM comdb.tbd_com_user_session WHERE expires < $1 AND login_id is null',
       [nowDate]
     )
 
