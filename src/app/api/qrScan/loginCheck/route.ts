@@ -15,7 +15,14 @@ export async function POST(req: NextRequest) {
   try {
     // 세션 ID 조회
     const result = await postgreSQL.query(
-      'SELECT session_id, email, expires, access_token, refresh_token FROM comdb.tbd_com_user_session WHERE session_id = $1 and email is not null ',
+      `SELECT
+        session_id
+        , login_id as email
+        , expires
+        , access_token
+        , refresh_token
+      FROM comdb.tbd_com_user_session
+      WHERE session_id = $1 and login_id is not null `,
       [sessionID]
     )
 
@@ -48,7 +55,18 @@ export async function POST(req: NextRequest) {
 
 async function getUser(email: string): Promise<User | undefined> {
   try {
-    const user = await postgreSQL.query<User>('SELECT * FROM users WHERE email=$1', [email])
+    const user = await postgreSQL.query<User>(
+      `SELECT
+        user_id as id
+        , user_name as name
+        , login_id as email
+        , user_pwd as password
+        , auth_key
+        , pfx_user_code
+      FROM comdb.tbd_com_user_session
+      WHERE login_id=$1`,
+      [email]
+    )
     return user.rows[0]
   } catch (error) {
     console.error('Failed to fetch user:', error)
