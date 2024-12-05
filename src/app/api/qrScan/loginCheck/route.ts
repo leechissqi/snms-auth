@@ -63,7 +63,7 @@ async function getUser(email: string): Promise<User | undefined> {
         , user_pwd as password
         , auth_key
         , pfx_user_code
-      FROM comdb.tbd_com_user_session
+      FROM comdb.tbd_com_org_user
       WHERE login_id=$1`,
       [email]
     )
