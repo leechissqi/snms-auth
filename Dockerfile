@@ -42,10 +42,20 @@ FROM node:22-alpine
 WORKDIR /app
 
 # 빌드 단계에서 필요한 파일만 복사
-COPY --from=builder /app /app
+#COPY --from=builder /app /app
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/package.json ./package.json
 
 # 노드 모듈 확인
 # RUN ls -la node_modules
 
-# 기본 실행 명령어 설정
-CMD ["npm", "start"]
+# 포트 환경 변수 설정 (여기서 PORT를 지정)
+ENV PORT=53001
+
+# 컨테이너 외부에 노출할 포트 지정
+EXPOSE 53001
+
+# 기본 실행 명령어 설정 (환경 변수 PORT를 사용)
+CMD ["node", "server.js"]
