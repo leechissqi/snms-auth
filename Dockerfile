@@ -7,6 +7,14 @@ WORKDIR /app
 # package.json 및 package-lock.json 복사
 COPY package.json package-lock.json ./
 
+# 캐시 무효화를 위한 ARG 추가 (1은 ARG 전달되지 않을 경우 기본값)
+ARG CACHEBUST=1
+# npm 버전 확인
+RUN echo "$CACHEBUST" && npm -version
+RUN echo "$CACHEBUST" && node --version
+RUN echo "$CACHEBUST" && npm cache clean --force
+RUN rm -rf node_modules
+
 # 의존성 설치 (production only)
 #RUN npm install --production
 RUN npm install --omit=dev
@@ -37,7 +45,7 @@ WORKDIR /app
 COPY --from=builder /app /app
 
 # 노드 모듈 확인
-RUN ls -la node_modules
+# RUN ls -la node_modules
 
 # 기본 실행 명령어 설정
 CMD ["npm", "start"]
